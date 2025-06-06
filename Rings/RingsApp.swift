@@ -1,17 +1,24 @@
 //
-//  RingsApp.swift
-//  Rings
+//  SectionalRingsApp.swift
+//  SectionalRings
 //
-//  Created by Chuck Deerinck on 6/6/25.
+//  Created by Luke Deerinck on 4/25/25.
 //
 
 import SwiftUI
 
 @main
 struct RingsApp: App {
+    @StateObject private var globalSettings = Globals()
+    @StateObject private var landables = Landables()
+    @StateObject private var sectionals = Sectionals()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainView()
+                .environmentObject(globalSettings)
+                .environmentObject(landables)
+                .environmentObject(sectionals)
         }
     }
 }
