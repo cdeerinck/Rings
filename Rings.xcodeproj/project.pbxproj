@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		B6221F252DF381CD0002C9CF /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = B6221F242DF381CD0002C9CF /* ZIPFoundation */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		134CFA852DF2CC6D00F624CC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6221F252DF381CD0002C9CF /* ZIPFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +117,7 @@
 			);
 			name = Rings;
 			packageProductDependencies = (
+				B6221F242DF381CD0002C9CF /* ZIPFoundation */,
 			);
 			productName = Rings;
 			productReference = 134CFA772DF2CC6B00F624CC /* Rings.app */;
@@ -195,6 +201,9 @@
 			);
 			mainGroup = 134CFA6E2DF2CC6B00F624CC;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				B6221F232DF381CD0002C9CF /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 134CFA782DF2CC6B00F624CC /* Products */;
 			projectDirPath = "";
@@ -558,6 +567,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B6221F232DF381CD0002C9CF /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/weichsel/ZIPFoundation";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.19;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B6221F242DF381CD0002C9CF /* ZIPFoundation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B6221F232DF381CD0002C9CF /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
+			productName = ZIPFoundation;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 134CFA6F2DF2CC6B00F624CC /* Project object */;
 }
