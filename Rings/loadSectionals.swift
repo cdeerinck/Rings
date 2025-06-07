@@ -77,7 +77,9 @@ func loadSectionals(sectionals:Sectionals){
                     //Load the zip and unzip the files
                 }
             }
-            await MainActor.run {
+            
+            // Now that everything is done, unlock (which tells the UI to update)
+            Task.detached { @MainActor in
                 sectionals.locked = false
             }
         
