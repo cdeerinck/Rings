@@ -13,19 +13,18 @@ struct SectionalsView: View {
     var dateFormatter = DateFormatter()
     
     var body: some View {
-        ScrollView {
-            GridRow {
-                HStack {
-                    Text("Name").frame(width:200)
-                    Text("Current").frame(width:90)
-                    Text("Next").frame(width:90)
-                    Text("Favorite").frame(width:70)
-                    Text("Keep Current").frame(width:90)
-                    Text("Status").frame(width:90)
-                }
+        GridRow {
+            HStack {
+                Text("Name").frame(width:200)
+                Text("Current").frame(width:90)
+                Text("Next").frame(width:90)
+                Text("Favorite").frame(width:70)
+                Text("Keep Current").frame(width:90)
+                Text("Status").frame(width:90)
             }
-            .bold()
-            
+        }
+        .bold()
+        ScrollView {
             ForEach($sectionals.sectionals //.sorted(by: { "\($0.favorite)\($0.name)" < "\($1.favorite)(\($1.name)" })
                     , id: \.self) { $item in
                 GridRow {
@@ -47,12 +46,13 @@ struct SectionalsView: View {
                             .frame(width:90)
                         
                     }
+                    .background(item.use || item.name == "Los Angeles" ? Color.yellow.opacity(0.5) : Color.white.opacity(0.5))
                 }
             }
         }
         .onAppear {
             dateFormatter.dateStyle = .short
-            loadSectionalDates(sectionals: sectionals)
+            loadSectionals(sectionals: sectionals)
         }
     }
         

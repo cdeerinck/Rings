@@ -29,7 +29,7 @@ Details from: https://en.wikipedia.org/wiki/World_file
 Line 1: A: Pixel size in the x-direction in the map units/pixel
 Line 2: D: Rotation about y-axis
 Line 3: B: Rotation about x-axis
-Line 4: E: pixel size in the y-directin in map units, almost always negative
+Line 4: E: pixel size in the y-direction in map units, almost always negative
 Line 5: C: x-coordinate of the center of the upper left pixel
 Line 6: F: y-coordinate of the center of the upper left pixel
 

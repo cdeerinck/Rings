@@ -13,7 +13,7 @@ struct AirportView: View {
     @State var imgScale: CGFloat = 1.0
     @State var lastScale: CGFloat = 1.0
     @State var tempSpot: CGPoint = .zero //CGPoint(x: landable.pixelX, y: landable.pixelY)
-    
+    @State var currentScale: CGFloat = 1.0
     let i: UIImage = UIImage(named: "Los Angeles SEC.tif")!
     let secBit: UIImage = UIImage(named: "Sectional Bit.jpg")!
     @Namespace var namespace
@@ -69,7 +69,7 @@ struct AirportView: View {
                 image: i,
                 minScale: 0.05,
                 maxScale: 3.0,
-                currentScale: 1.0,
+                currentScale: $currentScale,
                 offset: $tempSpot
             )
             .border(Color.purple, width:5.0)

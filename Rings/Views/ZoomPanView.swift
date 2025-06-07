@@ -13,7 +13,7 @@ struct ZoomPanView: View {
     let minScale: CGFloat
     let maxScale: CGFloat
     
-    @State var currentScale:CGFloat
+    @Binding var currentScale:CGFloat
     @State var magnificationScale:CGFloat = 1.0
     @Binding var offset:CGPoint
     @State var lastLocation:CGPoint = .zero
@@ -35,7 +35,6 @@ struct ZoomPanView: View {
                                         offset.x += (value.location.x - lastLocation.x) * (1.0 / currentScale )
                                         offset.y += (value.location.y - lastLocation.y) * (1.0 / currentScale )
                                         lastLocation = value.location
-                                        print("Offset: \(offset)")
                                     } else {
                                         lastLocation = value.location
                                     }
@@ -80,12 +79,13 @@ struct ZoomPanView: View {
 #Preview {
     
     @Previewable @State var offset:CGPoint = CGPoint.zero
+    @Previewable @State var scale:CGFloat = 1.0
     
     ZoomPanView(
         image: UIImage(systemName: "photo") ?? UIImage(),
         minScale: 1.0,
         maxScale: 0.1,
-        currentScale: 0.1,
+        currentScale: $scale,
         offset: $offset
     )
 }

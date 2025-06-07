@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-func drawRings(image:UIImage, globalSettings:Globals, landables:Landables) -> UIImage {
+func drawRings(image:UIImage, globalSettings:Globals, landables:Landables, sectional:Sectional) -> UIImage {
     
     UIGraphicsBeginImageContext(image.size)
     
@@ -31,7 +31,7 @@ func drawRings(image:UIImage, globalSettings:Globals, landables:Landables) -> UI
     for ni in stride(from: 36.0, through: 32.0, by: -0.5) {
         for wi in stride(from: -121.5, through: -115.0, by: 0.5) {
             let radius:CGFloat = 10.0
-            let spot = lambertConformalConic(lat: ni, lon: wi, testing: false)
+            let spot = lambertConformalConic(lat: ni, lon: wi, sectional:sectional)
             let point = CGPoint(x: spot.x - radius, y: spot.y - radius)
             print(spot, point)
             let circle = CGRect(origin: point, size: CGSize(width:radius * 2.0, height:radius * 2.0))
