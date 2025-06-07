@@ -64,7 +64,8 @@ func loadSectionals(sectionals:Sectionals){
                 }
                 // 1) Delete the cached files for this sectional whose date is before today
                 // 2) If no tfw exists, make this sectiona as .unloaded
-                if !FileManager.default.fileExists(atPath: "\(FileManager.default.currentDirectoryPath)/\(sectional.name).tfw") {
+                let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("\(sectional.name) SEC.tfw")
+                if !FileManager.default.fileExists(atPath: documentsURL.path) {
                     // Mark it as unloaded
                     sectionals.sectionals[index].status = SectionalStatus.unloaded
                 } else {
@@ -72,9 +73,15 @@ func loadSectionals(sectionals:Sectionals){
                     sectionals.sectionals[index].status = SectionalStatus.loaded
                 }
                 // 3) If the sectonal has .keepCurrent || .use load it
-                if sectional.keepCurrent || sectional.use {
+                if (sectional.keepCurrent || sectional.use) && sectional.status == .loaded {
                     sectionals.sectionals[index].status = SectionalStatus.loading
                     //Load the zip and unzip the files
+                    do {
+                        try await unZipData(currentURL!)
+                    }
+                    catch {
+                        print("error: \(error)")
+                    }
                 }
             }
             
