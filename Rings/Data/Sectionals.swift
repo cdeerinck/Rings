@@ -17,7 +17,8 @@ import Foundation
 class Sectionals: ObservableObject {
     var faaBaseUrl: String = "https://aeronav.faa.gov/visual/_edition_/sectional-files/"
     var faaBaseExt: String = ".zip"
-    @Published var sectionals:[Sectional] = []
+    var sectionals:[Sectional] = []
+    @Published var locked: Bool = false
     
     init() {
         self.sectionals = defaultSectionals()

@@ -18,71 +18,75 @@ import Foundation
 
 func loadSectionals(sectionals:Sectionals){
     
-    // First we have to sort in the order they appear on the FAA web page
-    // Thank you to the FAA wizards for making this strange sort sequence required.
-    // They put St Louis before Salt Lake, and so must we.
-    sectionals.sectionals = sectionals.sectionals.sorted(by: {$0.name.replacingOccurrences(of: "St ", with:"Saint ") < $1.name.replacingOccurrences(of: "St ", with:"Saint ")})
+    // We can only do this if it isn't already in process
+    if sectionals.locked { return }
+    sectionals.locked = true
     
-    for item in sectionals.sectionals {
-        print(item.name)
-    }
+    sectionals.sectionals = sortSectionals(sectionals: sectionals.sectionals)
+    
+        for (index, item) in sectionals.sectionals.enumerated() {
+            print(index, item.name)
+            sectionals.sectionals[index].status = .error
+        }
     
     let url = URL(string: "https://www.faa.gov/air_traffic/flight_info/aeronav/digital_products/vfr")!
     let dateFormatter = DateFormatter()
     dateFormatter.locale = Locale(identifier: "en_US_POSIX") // set locale to reliable US_POSIX
     dateFormatter.dateFormat = "MM-dd-yyyy"
-    var dates:[(Int,Date,Date)] = []
     
     Task {
-        var html = try! String(contentsOf: url, encoding: .utf8) //{
         
-        let _ = extractBetweenTokens(content: &html, startToken: "Sectional Aeronautical Raster Charts", endToken: "GEO-TIFF")
-        for (index, sectional) in sectionals.sectionals.enumerated() {
-            let _ = extractBetweenTokens(content: &html, startToken: "<td>"+sectional.name, endToken: "/td>") // Get to the correct entry
-            let currentURL = extractBetweenTokens(content: &html, startToken: "<a href=", endToken: ">GEO-T") // Get the current edition
-            let _ = extractBetweenTokens(content: &html, startToken: "<a href=", endToken: ">PDF<") // Skip past the PDF
-            let nextURL = extractBetweenTokens(content: &html, startToken: "<a href=", endToken: ">GEO-T") // Get the next edition
-            
-            var temp:String = currentURL!
-            let currentDate = extractBetweenTokens(content: &temp, startToken: "/visual/", endToken: "/sectional")
-            temp = nextURL!
-            let nextDate = extractBetweenTokens(content: &temp, startToken: "/visual/", endToken: "/sectional")
-            dates.append(contentsOf: [(index,dateFormatter.date(from:currentDate!)!,dateFormatter.date(from:nextDate!)!)])
-        }
+        // Get html data into string
+        do {
+            var html = try String(contentsOf: url, encoding: .utf8)
+            //print(html, html.count)
+            let _ = extractBetweenTokens(content: &html, startToken: "Sectional Aeronautical Raster Charts", endToken: "GEO-TIFF")
+            // First we have to sort in the order they appear on the FAA web page
+            // Thank you to the FAA wizards for making this strange sort sequence required.
+            // They put St Louis before Salt Lake, and so must we.
+            for (index, sectional) in sectionals.sectionals.sorted(by: {$0.name.replacingOccurrences(of: "St ", with:"Saint ") < $1.name.replacingOccurrences(of: "St ", with:"Saint ")}).enumerated() {
+                //print("-----------------------------------------------------------------------------------------------------------")
+                //print(html, html.count)
+                let _ = extractBetweenTokens(content: &html, startToken: "<td>"+sectional.name, endToken: "/td>") // Get to the correct entry
+                let currentURL = extractBetweenTokens(content: &html, startToken: "<a href=", endToken: ">GEO-T") // Get the current edition
+                let _ = extractBetweenTokens(content: &html, startToken: "<a href=", endToken: ">PDF<") // Skip past the PDF
+                let nextURL = extractBetweenTokens(content: &html, startToken: "<a href=", endToken: ">GEO-T") // Get the next edition
+                //print(currentURL, nextURL)
+                var temp:String = currentURL!
+                let currentDate = extractBetweenTokens(content: &temp, startToken: "/visual/", endToken: "/sectional")
+                if currentDate != nil {
+                    sectionals.sectionals[index].currentEdition = dateFormatter.date(from:currentDate!)!
+                }
+                temp = nextURL!
+                let nextDate = extractBetweenTokens(content: &temp, startToken: "/visual/", endToken: "/sectional")
+                if nextDate != nil {
+                    sectionals.sectionals[index].nextEdition = dateFormatter.date(from:nextDate!)!
+                }
+                // 1) Delete the cached files for this sectional whose date is before today
+                // 2) If no tfw exists, make this sectiona as .unloaded
+                if !FileManager.default.fileExists(atPath: "\(FileManager.default.currentDirectoryPath)/\(sectional.name).tfw") {
+                    // Mark it as unloaded
+                    sectionals.sectionals[index].status = SectionalStatus.unloaded
+                } else {
+                    // Mark it as loaded
+                    sectionals.sectionals[index].status = SectionalStatus.loaded
+                }
+                // 3) If the sectonal has .keepCurrent || .use load it
+                if sectional.keepCurrent || sectional.use {
+                    sectionals.sectionals[index].status = SectionalStatus.loading
+                    //Load the zip and unzip the files
+                }
+            }
+            await MainActor.run {
+                sectionals.locked = false
+            }
         
     }
-    
-    // 1) Delete all of the cached files whose date is before today.
-    
-    // 2) Apply the dates, and update the status
-    for date in dates {
-        print(dates.count)
-        print(date)
-        sectionals.sectionals[date.0].currentEdition = date.1
-        sectionals.sectionals[date.0].nextEdition = date.2
+    catch {
+        print("Failed to load URL")
+        return
     }
-    // 3) Mark those sectionals without a tfw as .unloaded
-    for (index, sectional) in sectionals.sectionals.enumerated() {
-        // Check for existance of tfw file
-        if !FileManager.default.fileExists(atPath: "\(FileManager.default.currentDirectoryPath)/tfw/\(sectional.name).tfw") {
-            // Mark it as unloaded
-            sectionals.sectionals[index].status = SectionalStatus.unloaded
-        }
-    }
-    
-    // 4) Load all sectionals that are .unloaded if keepCurrent || use
-    for (index, sectional) in sectionals.sectionals.enumerated() {
-        if sectional.keepCurrent || sectional.use {
-            sectionals.sectionals[index].status = SectionalStatus.unloaded
-            // Kick off a task to load and unzip it
-            
-        }
-    }
-    // Then we sort them back in the expected order.
-    sectionals.sectionals = sortSectionals(sectionals: sectionals.sectionals)
-    
-    
-    
+}
 }
 
 
