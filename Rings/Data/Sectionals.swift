@@ -17,7 +17,7 @@ import Foundation
 class Sectionals: ObservableObject {
     var faaBaseUrl: String = "https://aeronav.faa.gov/visual/_edition_/sectional-files/"
     var faaBaseExt: String = ".zip"
-    var sectionals:[Sectional] = []
+    @Published var sectionals:[Sectional] = []
     @Published var locked: Bool = false
     
     init() {
@@ -35,6 +35,18 @@ class Sectionals: ObservableObject {
         }
     }
     
+    func sortSectionals() {
+        self.sectionals = sectionals.sorted(by: { lhs, rhs in
+            if lhs.inAK != rhs.inAK {
+                return (lhs.inAK ? "Z":"A") < (rhs.inAK ? "Z":"A") // Alaska secitonals go to the end, not a lot of Soaring there.
+            } else if lhs.favorite != rhs.favorite {
+                return (lhs.favorite ? "A":"Z") < (rhs.favorite ? "A":"Z") // Favorites go first
+            } else {
+                return lhs.name < rhs.name
+            }
+        }
+        )
+    }
 }
 
 func defaultSectionals() -> [Sectional] {
@@ -97,15 +109,4 @@ func defaultSectionals() -> [Sectional] {
     return sectionals
 }
 
-func sortSectionals(sectionals:[Sectional]) -> [Sectional] {
-    return sectionals.sorted(by: { lhs, rhs in
-        if lhs.inAK != rhs.inAK {
-            return (lhs.inAK ? "Z":"A") < (rhs.inAK ? "Z":"A") // Alaska secitonals go to the end, not a lot of Soaring there.
-        } else if lhs.favorite != rhs.favorite {
-            return (lhs.favorite ? "A":"Z") < (rhs.favorite ? "A":"Z") // Favorites go first
-        } else {
-            return lhs.name < rhs.name
-        }
-    }
-    )
-}
+

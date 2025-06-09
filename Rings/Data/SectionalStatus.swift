@@ -11,5 +11,6 @@ enum SectionalStatus: String {
     case unloaded = "Unloaded"
     case loading = "Loading"
     case loaded = "Loaded"
+    case cached = "Cached"
     case error = "Error"
 }

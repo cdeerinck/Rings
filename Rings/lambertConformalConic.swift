@@ -13,7 +13,7 @@ func lambertConformalConic(lat: Double, lon: Double, sectional:Sectional) -> (x:
     
     let φ:Double = Angle(degrees: lat).radians // Convert decimal degrees into radians
     let λ:Double = Angle(degrees: lon).radians
-
+    
     
     //Givens for this sectional from .htm file
     let φ1 = Angle(degrees: sectional.firstStandardParallel).radians // Latitude of first standard parallel
@@ -27,7 +27,7 @@ func lambertConformalConic(lat: Double, lon: Double, sectional:Sectional) -> (x:
     let a = sectional.ellipsoidSemiMajorAxis // Semi-major axis for GRS 80
     let f = 1.0/sectional.denominatorOfFlatteningRatio // Flattening for GRS 80
     let e = sqrt(2*f - f*f) // Eccentricity for GRS 80
-
+    
     let m1:Double = cos(φ1) / pow(1 - pow(e,2) * pow(sin(φ1),2), 0.5)
     let m2:Double = cos(φ2) / pow(1 - pow(e,2) * pow(sin(φ2),2), 0.5)
     let t:Double = tan(Double.pi/4 - φ/2)/pow((1-e*sin(φ))/(1+e*sin(φ)),e/2)
@@ -47,8 +47,57 @@ func lambertConformalConic(lat: Double, lon: Double, sectional:Sectional) -> (x:
     let θ:Double = n * (λ - λF)
     let E = EF + r * sin(θ)
     let N = NF + rF - r * cos(θ)
-
+    
     let (x,y) = UTMToPixel(easting: E, northing: N, sectional: sectional)
     
     return (x:x, y:y)
+}
+
+//struct LambertConformalConic {
+//    // Standard parameters for Lambert Conformal Conic projection
+//    let centralMeridian: Double // λ₀ (central meridian)
+//    let latitudeOfOrigin: Double // φ₀ (latitude of origin)
+//    
+//    // Earth parameters
+//    let earthRadius: Double = 6378137.0 // Earth radius in meters (WGS84)
+//    let eccentricity: Double = 0.081819191 // Earth eccentricity (WGS84)
+//}
+
+func inverseProject(x: Double, y: Double, sectional:Sectional) -> (latitude: Double, longitude: Double) {
+    
+    let EF = sectional.FalseEasting // False Easting
+    let NF = sectional.FalseNorthing // False Northing
+    let φ1 = Angle(degrees: sectional.firstStandardParallel).radians // Latitude of first standard parallel
+    let φ2 = Angle(degrees: sectional.secondStandardParallel).radians // Latitude of second standard parallel
+    let φF = Angle(degrees: sectional.LatitudeOfFalseOrigin).radians // Latitude of false origin
+    let λF = Angle(degrees:sectional.LongitudeOfFalseOrigin).radians // Longitude of false origin
+    let a = sectional.ellipsoidSemiMajorAxis // Semi-major axis for GRS 80
+    let f = 1.0/sectional.denominatorOfFlatteningRatio // Flattening for GRS 80
+    let e = sqrt(2*f - f*f) // Eccentricity for GRS 80
+    
+    // Convert to radians
+    let x = x - EF
+    let y = y - NF
+    
+    // Calculate projection parameters
+    let n = log(cos(φ1) / cos(φ2)) /
+    log(tan(.pi/4 + φ2/2) / tan(.pi/4 + φ1/2))
+    
+    let F = cos(φ1) * pow(tan(.pi/4 + φ1/2), n) / n
+    
+    let ρ0 = a * F * pow(tan(.pi/4 + φF/2), -n)
+    
+    // Calculate rho and theta
+    let ρ = sqrt(x * x + (ρ0 - y) * (ρ0 - y))
+    let φ = atan2(x, ρ0 - y)
+    
+    // Calculate latitude and longitude
+    let latitude = 2 * atan(pow(a * F / ρ, 1/n)) - .pi/2
+    let longitude = φ/n + λF
+    
+    // Convert to degrees
+    let latDegrees = latitude * 180 / .pi
+    let lonDegrees = longitude * 180 / .pi
+    
+    return (latDegrees, lonDegrees)
 }

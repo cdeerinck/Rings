@@ -37,6 +37,9 @@ struct MapView: View {
                         print("Center: \(center), Scale: \(currentScale)")
                         print("Image size: \(si.size)")
                         print("View size: needs geometry reader")
+                        //landables.append(Landable("CL35","Warner Springs","Los-Angeles",33.2838889,116.667222,2880,35,70,12245.493338134676,8836.926481257557,"Gliderport.  Aerotows 9am-5pm, 7 days per week."))
+                        print(lambertConformalConic(lat: 33.2838889, lon: 116.667222, sectional: sectional))
+                        print(inverseProject(x: 151041.4890186461, y: -365525.18632080796, sectional: sectional))
                     }
                     ShareLink(item: Image(uiImage: si), preview: SharePreview("Rendered Sectional Rings", image: Image("Sectional Bit.jpg")
                        ))
