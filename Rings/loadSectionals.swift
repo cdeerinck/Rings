@@ -50,6 +50,7 @@ func loadSectionals(sectionals:Sectionals){
             }).enumerated() {
                 //print("-----------------------------------------------------------------------------------------------------------")
                 //print(html, html.count)
+                var tempStatus:SectionalStatus = sectional.status
                 let _ = extractBetweenTokens(content: &html, startToken: "<td>"+sectional.name, endToken: "/td>") // Get to the correct entry
                 let currentURL = extractBetweenTokens(content: &html, startToken: "<a href=", endToken: ">GEO-T") // Get the current edition
                 let _ = extractBetweenTokens(content: &html, startToken: "<a href=", endToken: ">PDF<") // Skip past the PDF
@@ -81,28 +82,34 @@ func loadSectionals(sectionals:Sectionals){
                         @MainActor in sectionals.sectionals[index].status = SectionalStatus.unloaded
                         //print(sectionals.sectionals[index].name, sectionals.sectionals[index].status)
                     }
+                    tempStatus = SectionalStatus.unloaded
 
                 } else {
                     // Mark it as cached
                     Task.detached {
                         @MainActor in sectionals.sectionals[index].status = SectionalStatus.cached
+                        
                         //print("***", sectionals.sectionals[index].name, sectionals.sectionals[index].status)
                     }
+                    tempStatus = SectionalStatus.cached
+                    //break
                     
                 }
                 // 3) If the sectonal has .keepCurrent || .use load it
-                if (sectional.keepCurrent || sectional.use) && (sectional.status != .loaded && sectional.status != .cached) {
+                if (sectional.keepCurrent || sectional.use) && (tempStatus != .loaded && tempStatus != .cached) {
                     Task.detached {
                         @MainActor in sectionals.sectionals[index].status = SectionalStatus.loading
                         //print("***", sectionals.sectionals[index].name, sectionals.sectionals[index].status)
                     }
+                    tempStatus = SectionalStatus.loading
                     //Load the zip and unzip the files
                     do {
                         try await unZipData(currentURL!)
                         Task.detached {
-                            sectionals.sectionals[index].status = SectionalStatus.loaded
+                            @MainActor in sectionals.sectionals[index].status = SectionalStatus.loaded
                             //print("***", sectionals.sectionals[index].name, sectionals.sectionals[index].status)
                         }
+                        tempStatus = .loaded
                     }
                     catch {
                         print("error: \(error)")
