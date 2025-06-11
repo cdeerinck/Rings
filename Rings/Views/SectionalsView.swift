@@ -62,7 +62,7 @@ struct SectionalsView: View {
                         }
                     }
                 },
-                        header: { SectionalHeader(label: "Continental US") }
+                        header: { SectionalHeader(label: "Continental US & Hawaii") }
                 )
                 .onTapGesture {
                     expandContUS.toggle()

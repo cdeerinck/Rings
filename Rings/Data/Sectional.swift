@@ -6,12 +6,14 @@
 //
 
 import Foundation
+import UIKit
 
-struct Sectional: Hashable, Equatable {
+class Sectional: Hashable, Equatable {
     let id: UUID = UUID()
     let name: String
     var favorite: Bool = false
     var status: SectionalStatus = .unloaded
+    var image: UIImage = UIImage(systemName: "map")!
     var keepCurrent: Bool = false
     var use: Bool = false
     var inAK: Bool

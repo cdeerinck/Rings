@@ -9,11 +9,17 @@ import SwiftUI
 
 struct SectionalView: View {
     
+    @EnvironmentObject var globals:Globals
     @EnvironmentObject var sectionals:Sectionals
     @Binding var sectional:Sectional
     
     var body: some View {
         HStack {
+            Spacer()
+            Image(uiImage: sectional.image)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 60, height: 60)
             Text(sectional.name)
                 .frame(width:200)
             if sectional.currentEdition != nil {
@@ -39,6 +45,7 @@ struct SectionalView: View {
                 .frame(width:90)
             Text(sectional.status.rawValue)
                 .frame(width:90)
+            Spacer()
             //
         } // End HStack
         .background(sectional.use ? Color.yellow.opacity(0.5) : Color.white.opacity(0.5))
@@ -46,15 +53,14 @@ struct SectionalView: View {
             print("tap inside SectionalView")
             sectionals.locked.toggle()
             sectionals.locked.toggle()
-          markUse(sectionals: sectionals, name: sectional.name)
+            markUse(globals: globals, sectionals: sectionals, name: sectional.name)
        }
     }
 }
 
 #Preview {
-    
-
-    @Previewable @State var sectional = Sectional(name:"Los Angeles", inAK: false)
+    @Previewable
+    @State var sectional = Sectional(name:"Los Angeles", inAK: false)
     SectionalView(sectional: $sectional)
         .environmentObject(Sectionals())
 }

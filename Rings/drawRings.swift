@@ -33,7 +33,7 @@ func drawRings(image:UIImage, globalSettings:Globals, landables:Landables, secti
             let radius:CGFloat = 10.0
             let spot = lambertConformalConic(lat: ni, lon: wi, sectional:sectional)
             let point = CGPoint(x: spot.x - radius, y: spot.y - radius)
-            print(spot, point)
+            //print(spot, point)
             let circle = CGRect(origin: point, size: CGSize(width:radius * 2.0, height:radius * 2.0))
             context.setFillColor(UIColor.red.cgColor)
             context.addEllipse(in: circle)
@@ -44,8 +44,10 @@ func drawRings(image:UIImage, globalSettings:Globals, landables:Landables, secti
     
     if !globalSettings.useGradients { step = 2 }
     for ringIndex in stride(from: 0, through: 4, by: step) {
-        for item in landables.landables.filter({ $0.useable }) {
+        for item in landables.landables.filter({ $0.useable && $0.sectional == sectional.name } ) {
+            let spot = lambertConformalConic(lat: item.lat, lon: item.lon, sectional: sectional)
             let point = CGPoint(x: item.pixelX, y: item.pixelY) //inches2xy(left: item.tiffX, top: item.tiffY, size: image.size)
+            print(item.name, ringIndex, spot, point)
             let ring = getRing(landable: item, ringSegment: ringIndex, rings: globalSettings)
             let circle = CGRect(origin: CGPoint(x: point.x - ring.outsideRadius, y: point.y - ring.outsideRadius), size: CGSize(width: ring.outsideRadius*2, height:ring.outsideRadius*2))
             if(ring.gradient){

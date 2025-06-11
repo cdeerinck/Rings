@@ -15,7 +15,7 @@ struct MainView: View {
     
     var body: some View {
         TabView {
-            MapView(globalSettings: _globalSettings , sectional: Sectional(name: "Los Angeles"))
+            MapView(globalSettings: _globalSettings , sectionals: _sectionals, landables: _landables)
                 .tabItem {
                     Image(systemName: "house")
                     Text("Map")

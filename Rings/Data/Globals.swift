@@ -50,6 +50,7 @@ class Globals: ObservableObject {
     @Published var pixelsPerNM:Double = 43.5 // True for LA Sectional at least
     @Published var elevation:Double = 10000.0
     @Published var useGradients = false
+    var sectionalInUse:Sectional?
 }
 
 //var globalSettings = Globals()

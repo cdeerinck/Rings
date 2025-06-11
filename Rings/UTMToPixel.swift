@@ -5,6 +5,8 @@
 //  Created by Chuck Deerinck on 6/6/25.
 //
 
+import UIKit
+
 /*
     To go from UTM(x'y') to pixel position (x,y) use
 
@@ -28,7 +30,7 @@
  
 */
 
-func UTMToPixel(easting:Double, northing:Double, sectional: Sectional) -> (x: Double, y: Double) {
+func UTMToPixel(easting:Double, northing:Double, sectional: Sectional) -> CGPoint {
     let x = (sectional.yPixelSize * easting // (Ex'
             - sectional.xAxisRotation * northing // -By'
             + sectional.xAxisRotation * sectional.yUpperLeft // + BF
@@ -41,5 +43,5 @@ func UTMToPixel(easting:Double, northing:Double, sectional: Sectional) -> (x: Do
             - sectional.xPixelSize * sectional.yUpperLeft) // - AF)
             / ( sectional.xPixelSize * sectional.yPixelSize  // / (AE
             - sectional.yAxisRotation * sectional.xAxisRotation)  // - DB)
-    return (x, y)
+    return CGPoint(x:x, y:y)
 }

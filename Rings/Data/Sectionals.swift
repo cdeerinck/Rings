@@ -22,9 +22,13 @@ class Sectionals: ObservableObject {
     
     init() {
         self.sectionals = defaultSectionals()
-        for item in self.sectionals.enumerated() {
-            if item.element.name == "Los Angeles" {
-                sectionals[item.offset].favorite = true
+        for (index, item) in self.sectionals.enumerated() {
+            if item.name == "San Francisco" {
+                sectionals[index].favorite = true
+            }
+            if item.name == "Los Angeles" {
+                sectionals[index].favorite = true
+                sectionals[index].use = true
             }
         }
     }
@@ -36,17 +40,23 @@ class Sectionals: ObservableObject {
     }
     
     func sortSectionals() {
-        self.sectionals = sectionals.sorted(by: { lhs, rhs in
-            if lhs.inAK != rhs.inAK {
-                return (lhs.inAK ? "Z":"A") < (rhs.inAK ? "Z":"A") // Alaska secitonals go to the end, not a lot of Soaring there.
-            } else if lhs.favorite != rhs.favorite {
-                return (lhs.favorite ? "A":"Z") < (rhs.favorite ? "A":"Z") // Favorites go first
-            } else {
-                return lhs.name < rhs.name
-            }
-        }
-        )
+        self.sectionals = sectionals.sorted(by: {
+            $0.name.replacingOccurrences(of: "St ", with:"Saint ") < $1.name.replacingOccurrences(of: "St ", with:"Saint ")
+        } )
     }
+    
+    //    func sortSectionals() {
+    //        self.sectionals = sectionals.sorted(by: { lhs, rhs in
+    //            if lhs.inAK != rhs.inAK {
+    //                return (lhs.inAK ? "Z":"A") < (rhs.inAK ? "Z":"A") // Alaska secitonals go to the end, not a lot of Soaring there.
+    //            } else if lhs.favorite != rhs.favorite {
+    //                return (lhs.favorite ? "A":"Z") < (rhs.favorite ? "A":"Z") // Favorites go first
+    //            } else {
+    //                return lhs.name < rhs.name
+    //            }
+    //        }
+    //        )
+    //    }
 }
 
 func defaultSectionals() -> [Sectional] {
@@ -105,7 +115,6 @@ func defaultSectionals() -> [Sectional] {
     sectionals.append(Sectional(name: "Washington"))
     sectionals.append(Sectional(name: "Western Aleutian Islands", inAK: true))
     sectionals.append(Sectional(name: "Wichita"))
-    
     return sectionals
 }
 

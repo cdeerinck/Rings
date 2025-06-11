@@ -7,7 +7,7 @@
 
 import Foundation
 
-func markUse(sectionals:Sectionals, name: String) {
+func markUse(globals: Globals, sectionals:Sectionals, name: String) {
     for (index, _) in sectionals.sectionals.enumerated() {
 //        if sectionals.sectionals[index].use != (sectionals.sectionals[index].name == name) {
 //            print("Changing", sectionals.sectionals[index].name, name)
@@ -15,5 +15,8 @@ func markUse(sectionals:Sectionals, name: String) {
 //            print("Leaving", sectionals.sectionals[index].name, name)
 //        }
         sectionals.sectionals[index].use = (sectionals.sectionals[index].name == name)
+        if sectionals.sectionals[index].use {
+            globals.sectionalInUse = sectionals.sectionals[index]
+        }
     }
 }
