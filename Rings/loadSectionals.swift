@@ -53,7 +53,6 @@ func loadSectionals(sectionals:Sectionals){
                                                   // and use this value only when checking.
                 //print("-----------------------------------------------------------------------------------------------------------")
                 //print(html, html.count)
-                var tempStatus:SectionalStatus = sectional.status
                 let _ = extractBetweenTokens(content: &html, startToken: "<td>"+sectional.name, endToken: "/td>") // Get to the correct entry
                 let currentURL = extractBetweenTokens(content: &html, startToken: "<a href=", endToken: ">GEO-T") // Get the current edition
                 let _ = extractBetweenTokens(content: &html, startToken: "<a href=", endToken: ">PDF<") // Skip past the PDF

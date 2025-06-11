@@ -100,20 +100,20 @@ func inverseProject(N: Double, E: Double, sectional:Sectional) -> (lat: Double, 
     let rF:Double = a * F * pow(tF, n)
 
     //r' = ±{(E – EF) 2 + [rF – (N – NF)] 2}0.5 , taking the sign of n
-    let rPrime:Double = (N < 0.0 ? -1.0 : 1.0) * pow(E - EF,2) + pow(pow(N - NF,2),0.5)
+    let rPrime:Double = (n < 0.0 ? -1.0 : 1.0) * sqrt(pow(E - EF,2) + pow(rF - (N - NF),2))
 
     //t' = (r'/(aF))1/n
     let tPrime:Double = pow(rPrime / (a * F), 1.0 / n)
     //theta' = atan2 [(E- EF),(rF - (N- NF))]
     let θprime = atan2(E - EF, rF - (N - NF))
 
-    let λ = θprime / n + λF
+    let λ = Angle(radians: θprime / n + λF).degrees
     var ϕ = Double.pi / 2.0 - 2.0 * atan(tPrime)
-   
+    
     for _ in stride(from: 1, to: 4, by: 1) {
         ϕ = Double.pi / 2.0 - 2.0 * atan(tPrime  * pow((1 - e*sin(ϕ))/(1+e*sin(ϕ)),e / 2))
     }
-    
+    ϕ = Angle(radians:ϕ).degrees
     return (lat: ϕ, lon: λ)
 }
 
